@@ -5,6 +5,12 @@ const ContactCard = (props) => {
   return (
     <div className="item">
       <div className="right floated">
+        <Link to={`/contacts/${id}/edit`} state={{ contact: props.contact }}>
+          <i
+            className="edit alternate outline icon blue"
+            style={{ marginTop: "7px", marginRight: "10px" }}
+          />
+        </Link>
         <Link to={`/contacts/${id}/delete`} state={{ contact: props.contact }}>
           <i
             className="trash alternate outline icon red"
