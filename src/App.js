@@ -12,6 +12,8 @@ const BASE_URL = "http://localhost:3004";
 
 function App() {
   const [contacts, setContacts] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
 
   const retrieveContacts = async function () {
     const response = await fetch(BASE_URL + "/contacts").then((response) =>
@@ -36,8 +38,8 @@ function App() {
     await fetch(BASE_URL + "/contacts/" + id, {
       method: "DELETE",
     });
-    const newContacts = contacts.filter((contact) => contact.id !== id);
-    setContacts(newContacts);
+    const newContactsList = contacts.filter((contact) => contact.id !== id);
+    setContacts(newContactsList);
   };
 
   const updateContactHandler = async (contact) => {
@@ -56,6 +58,21 @@ function App() {
     );
   };
 
+  const searchHandler = (searchTerm) => {
+    setSearchTerm(searchTerm);
+    if (searchTerm !== "") {
+      const newContactsList = contacts.filter((contact) =>
+        Object.values(contact)
+          .join(" ")
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase())
+      );
+      setSearchResults(newContactsList);
+    } else {
+      setSearchResults(contacts);
+    }
+  };
+
   useEffect(() => {
     const getAllContacts = async () => {
       const allContacts = await retrieveContacts();
@@ -69,7 +86,16 @@ function App() {
       <Router>
         <Header />
         <Routes>
-          <Route path="/" element={<ContactList contacts={contacts} />} />
+          <Route
+            path="/"
+            element={
+              <ContactList
+                contacts={searchTerm.length < 1 ? contacts : searchResults}
+                term={searchTerm}
+                searchKeyword={searchHandler}
+              />
+            }
+          />
           <Route
             path="/add"
             element={<AddContact addContactHandler={addContactHandler} />}
