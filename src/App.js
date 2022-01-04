@@ -1,12 +1,20 @@
 import { useState, useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Outlet,
+} from "react-router-dom";
 import Header from "./components/Header";
 import AddContact from "./components/AddContact";
 import ContactList from "./components/ContactList";
 import ContactDetail from "./components/ContactDetail";
 import DeleteContact from "./components/DeleteContact";
 import EditContact from "./components/EditContact";
+import Login from "./components/Login";
+import { userContext, UserContextProvider } from "./context/userContext";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 const BASE_URL = "http://localhost:3004";
 
@@ -84,36 +92,41 @@ function App() {
   return (
     <div className="ui main container">
       <Router>
-        <Header />
-        <Routes>
-          <Route
-            path="/"
-            element={
-              <ContactList
-                contacts={searchTerm.length < 1 ? contacts : searchResults}
-                term={searchTerm}
-                searchKeyword={searchHandler}
+        <UserContextProvider>
+          <Header />
+          <Routes>
+            <Route path="/" element={<ProtectedRoute />}>
+              <Route
+                path="/"
+                element={
+                  <ContactList
+                    contacts={searchTerm.length < 1 ? contacts : searchResults}
+                    term={searchTerm}
+                    searchKeyword={searchHandler}
+                  />
+                }
               />
-            }
-          />
-          <Route
-            path="/add"
-            element={<AddContact addContactHandler={addContactHandler} />}
-          />
-          <Route path="/contacts/:id" element={<ContactDetail />} />
-          <Route
-            path="/contacts/:id/delete"
-            element={
-              <DeleteContact deleteContactHandler={removeContactHandler} />
-            }
-          />
-          <Route
-            path="/contacts/:id/edit"
-            element={
-              <EditContact updateContactHandler={updateContactHandler} />
-            }
-          />
-        </Routes>
+              <Route
+                path="/add"
+                element={<AddContact addContactHandler={addContactHandler} />}
+              />
+              <Route path="/contacts/:id" element={<ContactDetail />} />
+              <Route
+                path="/contacts/:id/delete"
+                element={
+                  <DeleteContact deleteContactHandler={removeContactHandler} />
+                }
+              />
+              <Route
+                path="/contacts/:id/edit"
+                element={
+                  <EditContact updateContactHandler={updateContactHandler} />
+                }
+              />
+            </Route>
+            <Route path="/login" element={<Login />} />
+          </Routes>
+        </UserContextProvider>
       </Router>
     </div>
   );
