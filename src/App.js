@@ -1,20 +1,17 @@
 import { useState, useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-  Outlet,
-} from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Header from "./components/Header";
 import AddContact from "./components/AddContact";
-import ContactList from "./components/ContactList";
+// import ContactList from "./components/ContactList";
 import ContactDetail from "./components/ContactDetail";
 import DeleteContact from "./components/DeleteContact";
 import EditContact from "./components/EditContact";
 import Login from "./components/Login";
 import { userContext, UserContextProvider } from "./context/userContext";
 import ProtectedRoute from "./components/ProtectedRoute";
+import SearchUsers from "./components/UserList";
+import SearchContacts from "./components/ContactList";
 
 const BASE_URL = "http://localhost:3004";
 
@@ -69,11 +66,13 @@ function App() {
   const searchHandler = (searchTerm) => {
     setSearchTerm(searchTerm);
     if (searchTerm !== "") {
-      const newContactsList = contacts.filter((contact) =>
-        Object.values(contact)
-          .join(" ")
-          .toLowerCase()
-          .includes(searchTerm.toLowerCase())
+      const newContactsList = contacts.filter(
+        (contact) =>
+          contact.name.toLowerCase().indexOf(searchTerm.toLowerCase()) >= 0
+        // Object.values(contact)
+        //   .join(" ")
+        //   .toLowerCase()
+        //   .includes(searchTerm.toLowerCase())
       );
       setSearchResults(newContactsList);
     } else {
@@ -99,11 +98,12 @@ function App() {
               <Route
                 path="/"
                 element={
-                  <ContactList
-                    contacts={searchTerm.length < 1 ? contacts : searchResults}
-                    term={searchTerm}
-                    searchKeyword={searchHandler}
-                  />
+                  <SearchContacts />
+                  // <ContactList
+                  //   contacts={searchTerm.length < 1 ? contacts : searchResults}
+                  //   term={searchTerm}
+                  //   searchKeyword={searchHandler}
+                  // />
                 }
               />
               <Route
@@ -125,6 +125,7 @@ function App() {
               />
             </Route>
             <Route path="/login" element={<Login />} />
+            <Route path="/users" element={<SearchUsers />} />
           </Routes>
         </UserContextProvider>
       </Router>
